@@ -1,0 +1,81 @@
+<div class="header">
+    <h1 class="totalCost">{{ totalCost }} CAD</h1>
+    <button 
+        class="btn" 
+        (click)="openDialogAdd()"
+    >
+        Add Expense
+    </button>
+</div>
+
+<div class="subHeader">
+    <div>
+        <button 
+            matSuffix mat-icon-button
+            [disableRipple]="true"
+            (click)="showCostFilter()"
+        >
+            <mat-icon>price_change</mat-icon>
+        </button>
+        <button 
+            matSuffix mat-icon-button
+            [disableRipple]="true"
+            (click)="showDateFilter()"
+        >
+            <mat-icon>date_range</mat-icon>
+        </button>
+    </div>
+    <div class="subHeader">
+        <input 
+            class="searchBar"
+            type="text"
+            id="search"
+            name="search"
+            [(ngModel)]="search"
+        />
+        <button matSuffix mat-icon-button
+            [disableRipple]="true"
+            (click)="findExpense()"
+        >
+            <mat-icon>search</mat-icon>
+        </button>
+    </div>
+    
+    <!--
+    <mat-form-field class="searchBar" appearance="fill">
+        <mat-label>Search</mat-label>
+        <input matInput type="text" [(ngModel)]="search">
+        <button matSuffix mat-icon-button >
+            <mat-icon>search</mat-icon>
+        </button>
+    </mat-form-field>
+    -->
+</div>
+
+<div>
+    <app-filter [showFilter]="filterType"></app-filter>
+</div>
+
+<app-expense 
+    *ngFor="let expense of displayedExpenses | slice : startPage:paginationLimit"
+    [expense]="expense"
+    (deleteOnClickExpense)="openDialogDelete(expense)"
+    (updateOnClickExpense)="openDialogUpdate(expense)"
+> 
+</app-expense>
+
+<div style="text-align:center">
+    <button mat-icon-button
+        (click)="(showMore())"
+        [disabled]="(showMoreCheck())"
+    >
+        <mat-icon>expand_more</mat-icon>
+    </button>
+
+    <button mat-icon-button
+        (click)="(showLess())"
+        [disabled]="(showLessCheck())"
+    >
+        <mat-icon>expand_less</mat-icon>
+    </button>
+</div>

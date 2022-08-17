@@ -1,0 +1,14 @@
+<mat-dialog-content>
+    <p>Do you really want to delete {{name}} expense record?</p>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+    <button mat-raised-button
+        [disableRipple]="true"
+        (click)="onCancel()"
+    >No</button>
+    <button mat-raised-button color="warn"
+        [disableRipple]="true"
+        (click)="onDelete()"
+    >Yes</button>
+</mat-dialog-actions>

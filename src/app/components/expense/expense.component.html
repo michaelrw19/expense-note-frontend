@@ -1,0 +1,24 @@
+<div class="expense">
+    <div class="expense-header">
+        <h3 class="cost"> {{expense.cost}} CAD</h3>
+        <div>
+            <button mat-icon-button color="primary"
+                [disableRipple]="true"
+                class="icons"
+                (click)="(updateOnClick(expense))"
+            >
+                <mat-icon>edit</mat-icon>
+            </button>
+            <button mat-icon-button color="warn"
+                [disableRipple]="true"
+                class="icons"
+                (click)="(deleteOnClick(expense))"
+            >
+                <mat-icon>cancel</mat-icon>
+            </button>
+        </div>
+    </div>
+    <div>
+        <p class="text"> {{expense.description}} <br> {{expense.date}} </p>
+    </div>
+</div>

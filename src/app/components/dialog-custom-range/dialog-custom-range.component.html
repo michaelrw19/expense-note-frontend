@@ -1,0 +1,29 @@
+<div>
+  <span>&#36;</span>
+  <input
+      class="input"
+      type="number"
+      [(ngModel)]="val1"
+      (ngModelChange)="makeCostRange()"
+      [disabled]="leftInputDisabled"
+  />
+  <select 
+      id="operation" 
+      [(ngModel)]="operation"
+      (ngModelChange)="isLeftInputDisabled()"
+      class="dropdown"
+  >
+      <option value="-">&nbsp;-&nbsp;</option>
+      <option value="&gt;">&nbsp;&gt;&nbsp;</option>
+      <option value="&lt;">&nbsp;&lt;&nbsp;</option>
+      <option value="&ge;">&nbsp;&ge;&nbsp;</option>
+      <option value="&le;">&nbsp;&le;&nbsp;</option>
+    </select>
+  <span>&#36;</span>
+  <input
+      class="input"
+      type="number"
+      [(ngModel)]="val2"
+      (ngModelChange)="makeCostRange()"
+  />
+</div>
