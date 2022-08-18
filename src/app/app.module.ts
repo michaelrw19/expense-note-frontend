@@ -7,7 +7,9 @@ import { ExpenseListComponent } from './components/expense-list/expense-list.com
 import { ExpenseComponent } from './components/expense/expense.component';
 import { DialogAddEditComponent } from './components/dialog-add-edit/dialog-add-edit.component';
 import { DialogDeleteComponent } from './components/dialog-delete/dialog-delete.component';
-//import { ExpenseService } from './services/expense.service';
+import { DialogCustomRangeComponent } from './components/dialog-custom-range/dialog-custom-range.component';
+import { FilterComponent } from './components/filter/filter.component';
+
 
 import { HttpClientModule } from '@angular/common/http';
 import { MatDialogModule, MAT_DIALOG_DEFAULT_OPTIONS } from '@angular/material/dialog';
@@ -20,13 +22,12 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatInputModule } from '@angular/material/input';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatRadioModule, MAT_RADIO_DEFAULT_OPTIONS } from '@angular/material/radio';
-import { FilterComponent } from './components/filter/filter.component';
-import { DialogCustomRangeComponent } from './components/dialog-custom-range/dialog-custom-range.component';
+import { MatExpansionModule } from '@angular/material/expansion';
+import { MatTabsModule } from '@angular/material/tabs'
 
 @NgModule({
   declarations: [
     AppComponent,
-    //ExpenseService,
     ExpenseListComponent,
     ExpenseComponent,
     DialogAddEditComponent,
@@ -48,7 +49,9 @@ import { DialogCustomRangeComponent } from './components/dialog-custom-range/dia
     MatInputModule,
     MatDatepickerModule,
     MatNativeDateModule,
-    MatRadioModule
+    MatRadioModule,
+    MatExpansionModule,
+    MatTabsModule
   ],
   providers: [
     {provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: {appearance: 'fill'}},

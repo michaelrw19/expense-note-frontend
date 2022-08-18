@@ -8,6 +8,7 @@ import { DialogDeleteComponent } from 'src/app/components/dialog-delete/dialog-d
 import { DialogAddEditComponent } from 'src/app/components/dialog-add-edit/dialog-add-edit.component';
 
 import { FilterComponent } from '../filter/filter.component';
+import { DateRange } from '@angular/material/datepicker';
 
 @Component({
   selector: 'app-expense-list',
@@ -15,7 +16,9 @@ import { FilterComponent } from '../filter/filter.component';
   styleUrls: ['./expense-list.component.css']
 })
 export class ExpenseListComponent implements OnInit, AfterViewInit { 
-  
+  @Input() year: string;
+  @Input() month: string;
+
   @ViewChild(FilterComponent)
   public filter: FilterComponent;
 
@@ -39,6 +42,9 @@ export class ExpenseListComponent implements OnInit, AfterViewInit {
   public startPage: number;
   public paginationLimit: number;
   public totalCost: number = 0;
+
+  public months: string[] = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+  public monthFilter: string;
 
   ngOnInit(): void {
     this.getExpenses();
@@ -132,8 +138,12 @@ export class ExpenseListComponent implements OnInit, AfterViewInit {
 
   ///// Dialog Functions /////
   public openDialogAdd(): void {
+    const newData = {
+      dateRange: this.getDateMinMax()
+    }
     const dialogRef = this.dialog.open(DialogAddEditComponent, {
       width: '255px',
+      data: newData
     });
     
     dialogRef.afterClosed().subscribe(
@@ -145,9 +155,16 @@ export class ExpenseListComponent implements OnInit, AfterViewInit {
   }
 
   public openDialogUpdate(expense: Expense): void {
+    const newData = {
+      id: expense.id,
+      cost: expense.cost,
+      description: expense.description,
+      date: expense.date,
+      dateRange: this.getDateMinMax()
+    }
     const dialogRef = this.dialog.open(DialogAddEditComponent, {
       width: '255px',
-      data: expense
+      data: newData
     });
     
     dialogRef.afterClosed().subscribe(
@@ -159,9 +176,16 @@ export class ExpenseListComponent implements OnInit, AfterViewInit {
   }
 
   public openDialogDelete(expense: Expense): void {
+    const newData = {
+      id: expense.id,
+      cost: expense.cost,
+      description: expense.description,
+      date: expense.date,
+      dateRange: this.getDateMinMax()
+    }
     const dialogRef = this.dialog.open(DialogDeleteComponent, {
       width: '255px',
-      data: expense
+      data: newData
     });
     
     dialogRef.afterClosed().subscribe(
@@ -173,6 +197,28 @@ export class ExpenseListComponent implements OnInit, AfterViewInit {
   }
   ///// Dialog Functions /////
 
+  ///// Dialog Sub Functions /////
+
+  public getDateMinMax(): any {
+    let month = this.months.indexOf(this.month) + 1;
+    let max = new Date(parseInt(this.year), month, 0).getDate();
+    if (month < 10) {
+      const dateRange = {
+        minDate: this.year + '-0' + month + '-01',
+        maxDate: this.year + '-0' + month + '-' + max
+      }
+      return dateRange;
+    }
+    else {
+      const dateRange = {
+        minDate: this.year + '-' + month + '-01',
+        maxDate: this.year + '-' + month + '-' + max
+      }
+      return dateRange;
+    }
+  }
+
+  ///// Dialog Sub Functions /////
 
   ///// Service Functions /////
   public getExpenses(): void {

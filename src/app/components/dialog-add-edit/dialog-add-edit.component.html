@@ -32,6 +32,8 @@
       id="date"
       [(ngModel)]="date"
       required
+      min={{dateFilterMin}}
+      max={{dateFilterMax}}
     >
   </mat-form-field>
 </mat-dialog-content>

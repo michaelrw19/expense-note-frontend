@@ -1,3 +1,4 @@
+import { ThisReceiver } from '@angular/compiler';
 import { Component, OnInit, Inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Expense } from 'src/app/interface/expense';
@@ -21,17 +22,21 @@ export class DialogAddEditComponent implements OnInit {
   public date: string;
   public Date: Date;
   public editData: boolean;
-  
+
+  public dateFilterMin: string;
+  public dateFilterMax: string;
+
   ngOnInit(): void {
     this.dialogRef.updatePosition({top: '100px'});
 
+    this.setDateRange(this.data.dateRange)
     if(this.data != null) {
-      this.setData(this.data);
-      this.editData = true;
+      this.setData(this.data)
+      this.editData = true
       this.title = "Edit Expense"
     }
     else {
-      this.editData = false;
+      this.editData = false
       this.title = "Add Expense"
     }
   }
@@ -51,6 +56,11 @@ export class DialogAddEditComponent implements OnInit {
   checkInputs(): Boolean{
     //return true if one the inputs is empty
     return (this.cost == undefined) || (this.description == undefined) || (this.date == undefined)
+  }
+
+  public setDateRange(range: any) {
+    this.dateFilterMin = range.minDate
+    this.dateFilterMax = range.maxDate
   }
 
   onSubmit(): void {
