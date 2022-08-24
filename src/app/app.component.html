@@ -1,4 +1,7 @@
 <!DOCTYPE html>
+
+<h1>Total spending this year: {{totalCost}} CAD</h1>
+
 <mat-accordion *ngFor="let year of years">
     <mat-expansion-panel>
         <mat-expansion-panel-header>
@@ -8,11 +11,19 @@
         </mat-expansion-panel-header>
 
         <mat-tab-group mat-align-tabs="center">
-            <mat-tab *ngFor="let month of months" label={{month}}>
+            <mat-tab *ngFor="let month of months ; let i = index">
+                <ng-template mat-tab-label>
+                    <p>
+                        {{month}}
+                        <br>
+                        {{costs[i]}} CAD
+                    </p>
+                </ng-template>
                 <div class="container">
                     <app-expense-list
                         year={{year}}
                         month={{month}}
+                        (costChangedEvent)="updateCostsInfo()"
                     ></app-expense-list>
                 </div>
             </mat-tab>

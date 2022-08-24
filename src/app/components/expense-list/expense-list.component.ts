@@ -1,5 +1,5 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, EventEmitter, OnInit, Input, ViewChild, AfterViewInit } from '@angular/core';
+import { Component, Output, EventEmitter, OnInit, Input, ViewChild, AfterViewInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Expense } from 'src/app/interface/expense';
 
@@ -8,7 +8,6 @@ import { DialogDeleteComponent } from 'src/app/components/dialog-delete/dialog-d
 import { DialogAddEditComponent } from 'src/app/components/dialog-add-edit/dialog-add-edit.component';
 
 import { FilterComponent } from '../filter/filter.component';
-import { DateRange } from '@angular/material/datepicker';
 
 @Component({
   selector: 'app-expense-list',
@@ -18,6 +17,8 @@ import { DateRange } from '@angular/material/datepicker';
 export class ExpenseListComponent implements OnInit, AfterViewInit { 
   @Input() year: string;
   @Input() month: string;
+
+  @Output() costChangedEvent = new EventEmitter<boolean>();
 
   @ViewChild(FilterComponent)
   public filter: FilterComponent;
@@ -37,42 +38,28 @@ export class ExpenseListComponent implements OnInit, AfterViewInit {
 
   public filterType: String = "";
 
-  public displayedExpenses: Expense[];
-  public allExpenses: Expense[];
+  public displayedExpenses: Expense[] = [];
+  public allExpenses: Expense[] = [];
   public startPage: number;
   public paginationLimit: number;
-  public totalCost: number = 0;
+  public totalCost: string = "";
 
   public months: string[] = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
   public monthFilter: string;
 
   ngOnInit(): void {
+    this.setMonthFilter();
     this.getExpenses();
     this.startPage = 0;
     this.paginationLimit = 5;
   }
 
-  ///// Total Cost Functions /////
-  public getTotalExpense(expenses: Expense[]): void{
-    //Use this only when loading the totalCost for the first time
-    let total = 0;
-    for (var val of expenses) {
-      total += val.cost;
-    }
-    this.totalCost = total;
-  }
+  ///// Emmit Output Functions /////
 
-  public updateTotalExpense(id: String, val: number){
-    //Use this after loading the totalCost, no need to iterate over the list all the time
-    if(id === "add") {
-      this.totalCost += val;
-    }
-    else if(id === "sub") {
-      this.totalCost -= val;
-    }
+  public emit(): void {
+    this.costChangedEvent.emit(true)
   }
-  ///// Total Cost Functions /////
-
+  ///// Emmit Output Functions /////
 
   ///// Pagination Functions /////
   public showMore(): void {
@@ -92,7 +79,6 @@ export class ExpenseListComponent implements OnInit, AfterViewInit {
   }
   ///// Pagination Functions /////
 
-
   ///// Filter Functions /////
   public showCostFilter(): void{
     this.filterType = "cost";
@@ -108,29 +94,24 @@ export class ExpenseListComponent implements OnInit, AfterViewInit {
 
   ///// Search Bar Functions /////
   //To Fix: search filter not applied when new expenses added (FIXED)
-  public searchFilter(filter: String): void{
-    let result: Expense[] = [];
 
-    this.expenseService.getExpenses().subscribe(
-      (response: Expense[]) => {
-        response.filter((expense) => {
-          if(expense.description.toLowerCase().includes(filter.trim().toLowerCase())) {
-            result.push((expense))
-          }
-        });
-        //Updates the list of expenses on the page
-        this.displayedExpenses = result;
-      },
-      (error: HttpErrorResponse) => {
-        alert(error.message);
+  //MOVE THIS TO SERVER SIDE
+  public searchFilter(filter: String): void {
+    let result: Expense[] = [];
+    this.allExpenses.filter((expense) => {
+      if(expense.description.toLowerCase().includes(filter.trim().toLowerCase())) {
+        result.push((expense))
       }
-    );
+    });
+    this.displayedExpenses = result;
   }
 
   public findExpense(): void{
     if(this.search !== "") {
       this.searchFilter(this.search);
-      console.log(this.displayedExpenses);
+    }
+    else {
+      this.displayedExpenses = this.allExpenses;
     }
   }
   ///// Search Bar Functions /////
@@ -221,16 +202,25 @@ export class ExpenseListComponent implements OnInit, AfterViewInit {
   ///// Dialog Sub Functions /////
 
   ///// Service Functions /////
+  public getTotalCost(): void {
+    this.expenseService.getTotalCost(this.monthFilter).subscribe(
+      (response: string) => {
+        console.log(this.monthFilter);
+        this.totalCost = response;
+      },
+      (error: HttpErrorResponse) => {
+        alert(error.message);
+      }
+    );
+  }
+
   public getExpenses(): void {
-    this.expenseService.getExpenses().subscribe(
+    this.expenseService.getExpensesByMonth(this.monthFilter).subscribe(
       (response: Expense[]) => {
-        console.log(response);
-        this.allExpenses = response;    //Update the list of transactions
+        this.getTotalCost();
+        this.allExpenses = response;    
         this.displayedExpenses = this.allExpenses;
         this.findExpense();
-        if(this.totalCost === 0) {
-          this.getTotalExpense(response);
-        }
       },
       (error: HttpErrorResponse) => {
         alert(error.message);
@@ -241,28 +231,20 @@ export class ExpenseListComponent implements OnInit, AfterViewInit {
   public addExpense(expense: Expense){
     this.expenseService.addExpense(expense).subscribe(
       (response: Expense) => {
-        console.log(response);
-        this.allExpenses.push(expense);
         this.getExpenses();
-        if(this.totalCost !== 0) {
-          this.updateTotalExpense("add", expense.cost);
-        }
+        this.emit();
       },
       (error: HttpErrorResponse) => {
         alert(error.message);
       }
     );
   }
-  //TODO: Total Price not updated when calling this function (FIXED)
+  
   public updateExpense(expense: any) {
     this.expenseService.updateExpense(expense).subscribe(
       (response: Expense) => {
-        console.log(response);
         this.getExpenses();
-        if (expense.oldCost !== response.cost) {
-          this.updateTotalExpense("sub", expense.oldCost);
-          this.updateTotalExpense("add", response.cost);
-        }
+        this.emit();
       },
       (error: HttpErrorResponse) => {
         alert(error.message);
@@ -273,14 +255,27 @@ export class ExpenseListComponent implements OnInit, AfterViewInit {
   public deleteExpense(expense: Expense) {
     this.expenseService.deleteExpense(expense.id).subscribe(
       (response: void) => {
-        console.log(response);
         this.getExpenses();
-        this.updateTotalExpense("sub", expense.cost);
+        this.emit();
       },
       (error: HttpErrorResponse) => {
         alert(error.message);
       }
     );
     }
-  }
+
   ///// Service Functions /////
+
+  ///// Service Helper Functions /////
+
+  public setMonthFilter(): void {
+    let month = this.months.indexOf(this.month) + 1;
+    if (month < 10) {
+      this.monthFilter = this.year + '-0' + month
+    }
+    else {
+      this.monthFilter = this.year + '-' + month
+    }
+  }
+  ///// Service Helper Functions /////
+  }

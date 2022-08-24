@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { Expense } from 'src/app/interface/expense'
@@ -9,9 +9,22 @@ import { Expense } from 'src/app/interface/expense'
 })
 export class ExpenseService {
   private apiServerUrl = environment.apiBaseUrl;
+  private params = new HttpParams();
 
   constructor( private http: HttpClient ) { }
-  
+
+  public getTotalCost(date: string): Observable<string>{
+    return this.http.get<string>(`${this.apiServerUrl}/expense/totalCost?date=${date}`);
+  }
+
+  public getTotalCostPerMonth(year: string): Observable<number[]>{
+    return this.http.get<number[]>(`${this.apiServerUrl}/expense/totalCostPerMonth?year=${year}`);
+  }
+
+  public getExpensesByMonth(date: String):Observable<Expense[]>{
+    return this.http.get<Expense[]>(`${this.apiServerUrl}/expense/getExpensesByMonth?date=${date}`);
+  }
+
   public getExpenses():Observable<Expense[]>{
     return this.http.get<Expense[]>(`${this.apiServerUrl}/expense/all`);
   }
