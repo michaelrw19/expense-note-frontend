@@ -21,8 +21,20 @@ export class ExpenseService {
     return this.http.get<number[]>(`${this.apiServerUrl}/expense/totalCostPerMonth?year=${year}`);
   }
 
-  public getExpensesByMonth(date: String):Observable<Expense[]>{
+  public getExpensesByMonth(date: string): Observable<Expense[]>{
     return this.http.get<Expense[]>(`${this.apiServerUrl}/expense/getExpensesByMonth?date=${date}`);
+  }
+
+  public getExpensesByYear(year: string): Observable<Expense[]>{
+    return this.http.get<Expense[]>(`${this.apiServerUrl}/expense/getExpensesByYear?year=${year}`);
+  }
+
+  public applySearchFilter(keyword: string, date: string): Observable<Expense[]>{
+    return this.http.get<Expense[]>(`${this.apiServerUrl}/expense/applySearchFilter?keyword=${keyword}&date=${date}`);
+  }
+
+  public applyCostFilter(range1: number, range2: number, code: string, date: string): Observable<Expense[]>{
+    return this.http.get<Expense[]>(`${this.apiServerUrl}/expense/applySearchFilter?range1=${range1}&range2=${range2}&code=${code}&date=${date}`);
   }
 
   public getExpenses():Observable<Expense[]>{

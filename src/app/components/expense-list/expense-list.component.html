@@ -1,6 +1,3 @@
-<p>Year:{{year}}</p>
-<p>Month:{{month}}</p>
-
 <div class="header">
     <h1 class="totalCost">{{ totalCost }} CAD</h1>
     <button 
@@ -13,20 +10,47 @@
 
 <div class="subHeader">
     <div>
-        <button 
-            matSuffix mat-icon-button
+        <button mat-icon-button
+            [matMenuTriggerFor]="costFilterMenu"
             [disableRipple]="true"
             (click)="showCostFilter()"
         >
             <mat-icon>price_change</mat-icon>
         </button>
-        <button 
-            matSuffix mat-icon-button
+        <mat-menu #costFilterMenu="matMenu" xPosition="after">
+        </mat-menu>
+
+        <button mat-icon-button
+            [matMenuTriggerFor]="sortFilterMenu"
             [disableRipple]="true"
-            (click)="showDateFilter()"
         >
-            <mat-icon>date_range</mat-icon>
+            <mat-icon>sort</mat-icon>
         </button>
+        <mat-menu #sortFilterMenu="matMenu" xPosition="after">
+            <div>
+                <mat-radio-group 
+                    class="radioGroup" 
+                    (click)="$event.stopPropagation()"
+                    [(ngModel)]="sortFilter"
+                >
+                    <mat-radio-button class="radioButton" value="CLH">Cost Low-High</mat-radio-button>
+                    <mat-radio-button class="radioButton" value="CHL">Cost High-Low</mat-radio-button>
+                    <mat-radio-button class="radioButton" value="DOR">Date Oldest-Recent</mat-radio-button>
+                    <mat-radio-button class="radioButton"value="DRO">Date Recent-Oldest</mat-radio-button>
+                </mat-radio-group>
+                <p>{{sortFilter}}</p>
+            </div>
+            <div class="sortFilterButtons">
+                <mat-dialog-actions align="center">
+                    <button mat-button>Cancel</button>
+                    <button mat-button 
+                      (click)="$event.stopPropagation()"
+                      [disabled]="sortInputCheck()"
+                      >Submit
+                    </button>
+                </mat-dialog-actions>
+            </div>
+        </mat-menu>
     </div>
     <div class="subHeader">
         <input 
@@ -36,7 +60,7 @@
             name="search"
             [(ngModel)]="search"
         />
-        <button matSuffix mat-icon-button
+        <button mat-icon-button
             [disableRipple]="true"
             (click)="findExpense()"
         >

@@ -33,32 +33,19 @@ export class FilterComponent implements OnInit {
       this.isCostFilterHidden = true;
     }
     else {
-      this.isDateFilterHidden = true;
       this.isCostFilterHidden = false;
     }
     this.val1 = "";
     this.val2 = "";
   }
 
-  public showDateFilter(): void {
-    if(!this.isDateFilterHidden) {
-      this.isDateFilterHidden = true;
-    }
-    else {
-      this.isCostFilterHidden = true;
-      this.isDateFilterHidden = false;
-    }
-  }
-
   public isLeftInputDisabled(): void {
-    console.log(this.leftInputDisabled);
     this.leftInputDisabled = this.operation !== '-';
     this.val1 = "";
     this.val2 = "";
   }
 
   public makeCostRange(): void {
-    console.log("Here");
     if (this.leftInputDisabled) {
       this.costRange = this.operation + " " + this.val2;
     }
@@ -80,7 +67,7 @@ export class FilterComponent implements OnInit {
     dialogRef.afterClosed().subscribe(
       result => { 
         if(result != null) {
-          
+          console.log(result);
         }
     });
   }

@@ -1,4 +1,4 @@
-.header {
+  .header {
     display: flex;
     justify-content: space-between;
     align-items:center; 
@@ -40,3 +40,20 @@
   .btn :hover {
     opacity: 0.5;
   }
+
+.radioGroup {
+  display: flex;
+  flex-direction: column;
+  margin: 10px;
+  margin-left: 15px;
+  align-items: flex-start;
+}
+
+.radioButton {
+  margin: 5px
+}
+
+.sortFilterButtons {
+  margin-left: 50px;
+  margin-right: 5px;
+}

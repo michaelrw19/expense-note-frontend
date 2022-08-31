@@ -55,7 +55,11 @@ export class DialogAddEditComponent implements OnInit {
 
   checkInputs(): Boolean{
     //return true if one the inputs is empty
-    return (this.cost == undefined) || (this.description == undefined) || (this.date == undefined)
+    let cost: boolean = (this.cost == undefined) || (this.cost == null)
+    let desc: boolean = (this.description == undefined) || (this.description == "") || (this.description == null)
+    let date: boolean = this.date == undefined
+
+    return cost || desc || date;
   }
 
   public setDateRange(range: any) {

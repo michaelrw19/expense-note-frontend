@@ -32,9 +32,7 @@ export class ExpenseListComponent implements OnInit, AfterViewInit {
   ngAfterViewInit(): void {
    
   }
-
-  public testStr: String = "";
-  public search: String = "";
+  public search: string = "";
 
   public filterType: String = "";
 
@@ -46,6 +44,8 @@ export class ExpenseListComponent implements OnInit, AfterViewInit {
 
   public months: string[] = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
   public monthFilter: string;
+
+  public sortFilter: string = "";
 
   ngOnInit(): void {
     this.setMonthFilter();
@@ -80,30 +80,27 @@ export class ExpenseListComponent implements OnInit, AfterViewInit {
   ///// Pagination Functions /////
 
   ///// Filter Functions /////
-  public showCostFilter(): void{
+  public showCostFilter(): void {
     this.filterType = "cost";
     this.filter.showCostFilter();
   }
-
-  public showDateFilter(): void{
-    this.filterType = "date";
-    this.filter.showDateFilter();
+  public sortInputCheck(): boolean {
+    return this.sortFilter === "" || this.sortFilter === undefined
   }
   ///// Filter Functions /////
 
 
   ///// Search Bar Functions /////
   //To Fix: search filter not applied when new expenses added (FIXED)
-
-  //MOVE THIS TO SERVER SIDE
-  public searchFilter(filter: String): void {
-    let result: Expense[] = [];
-    this.allExpenses.filter((expense) => {
-      if(expense.description.toLowerCase().includes(filter.trim().toLowerCase())) {
-        result.push((expense))
+  public searchFilter(keyword: string): void {
+    this.expenseService.applySearchFilter(keyword, this.monthFilter).subscribe(
+      (response: Expense[]) => {
+        this.displayedExpenses = response
+      },
+      (error: HttpErrorResponse) => {
+        alert(error.message);
       }
-    });
-    this.displayedExpenses = result;
+    );
   }
 
   public findExpense(): void{
@@ -205,7 +202,6 @@ export class ExpenseListComponent implements OnInit, AfterViewInit {
   public getTotalCost(): void {
     this.expenseService.getTotalCost(this.monthFilter).subscribe(
       (response: string) => {
-        console.log(this.monthFilter);
         this.totalCost = response;
       },
       (error: HttpErrorResponse) => {

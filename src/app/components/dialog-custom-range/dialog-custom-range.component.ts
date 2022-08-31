@@ -28,19 +28,16 @@ export class DialogCustomRangeComponent implements OnInit {
   public leftInputDisabled: boolean = false;
   public costRange: string = "";
 
-
   ngOnInit(): void {
   }
 
   public isLeftInputDisabled(): void {
-    console.log(this.leftInputDisabled);
     this.leftInputDisabled = this.operation !== '-';
     this.val1 = "";
     this.val2 = "";
   }
 
   public makeCostRange(): void {
-    console.log("Here");
     if (this.leftInputDisabled) {
       this.costRange = this.operation + " " + this.val2;
     }
@@ -48,6 +45,26 @@ export class DialogCustomRangeComponent implements OnInit {
       this.costRange = this.val1 + this.operation + this.val2;
     }
 
+  }
+
+  checkInputs(): boolean {
+    //return true if one the inputs is empty
+    let val1: boolean = this.val1 === undefined || this.val1 === null || this.val1 === ""
+    let val2: boolean = this.val2 === undefined || this.val2 === null || this.val2 === ""
+
+    if (this.leftInputDisabled) {
+      return val2
+    }
+    return val1 || val2
+  }
+
+  public onCancel(): void {
+    this.dialogRef.close(null)
+  }
+
+  public onSubmit(): void {
+    this.makeCostRange()
+    this.dialogRef.close(this.costRange);
   }
 
 }

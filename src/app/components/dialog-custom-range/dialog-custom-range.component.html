@@ -1,29 +1,45 @@
-<div>
+<h1 class="title">Custom Range</h1>
+<div class="layout">
   <span>&#36;</span>
   <input
-      class="input"
-      type="number"
-      [(ngModel)]="val1"
-      (ngModelChange)="makeCostRange()"
-      [disabled]="leftInputDisabled"
+    maxlength="10"
+    class="input"
+    type="number"
+    [(ngModel)]="val1"
+    (ngModelChange)="makeCostRange()"
+    [disabled]="leftInputDisabled"
   />
   <select 
-      id="operation" 
-      [(ngModel)]="operation"
-      (ngModelChange)="isLeftInputDisabled()"
-      class="dropdown"
+    id="operation" 
+    [(ngModel)]="operation"
+    (ngModelChange)="isLeftInputDisabled()"
+    class="dropdown"
   >
-      <option value="-">&nbsp;-&nbsp;</option>
-      <option value="&gt;">&nbsp;&gt;&nbsp;</option>
-      <option value="&lt;">&nbsp;&lt;&nbsp;</option>
-      <option value="&ge;">&nbsp;&ge;&nbsp;</option>
-      <option value="&le;">&nbsp;&le;&nbsp;</option>
+    <option value="-">&nbsp;-&nbsp;</option>
+    <option value="&gt;">&nbsp;&gt;&nbsp;</option>
+    <option value="&lt;">&nbsp;&lt;&nbsp;</option>
+    <option value="&ge;">&nbsp;&ge;&nbsp;</option>
+    <option value="&le;">&nbsp;&le;&nbsp;</option>
     </select>
   <span>&#36;</span>
   <input
-      class="input"
-      type="number"
-      [(ngModel)]="val2"
-      (ngModelChange)="makeCostRange()"
+    maxlength="10"
+    class="input"
+    type="number"
+    [(ngModel)]="val2"
+    (ngModelChange)="makeCostRange()"
   />
 </div>
+
+<mat-dialog-actions align="end">
+  <button mat-button 
+    (click)="onCancel()"
+    >Cancel
+  </button>
+  <button mat-button 
+    [mat-dialog-close]="true" 
+    cdkFocusInitial (click)="onSubmit()" 
+    [disabled]="checkInputs()"
+    >Submit
+  </button>
+</mat-dialog-actions>
