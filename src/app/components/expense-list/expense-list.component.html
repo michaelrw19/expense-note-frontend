@@ -1,98 +1,74 @@
 <div class="header">
     <h1 class="totalCost">{{ totalCost }} CAD</h1>
-    <button 
-        class="btn" 
-        (click)="openDialogAdd()"
-    >
+    <button class="btn" (click)="openDialogAdd()">
         Add Expense
     </button>
 </div>
 
 <div class="subHeader">
     <div>
-        <button mat-icon-button
-            [matMenuTriggerFor]="costFilterMenu"
-            [disableRipple]="true"
-            (click)="showCostFilter()"
-        >
+        <button mat-icon-button [matMenuTriggerFor]="costFilterMenu" [disableRipple]="true">
             <mat-icon>price_change</mat-icon>
         </button>
-        <mat-menu #costFilterMenu="matMenu" xPosition="after">
+        <mat-menu #costFilterMenu="matMenu" xPosition="after" (closed)="cancelCostFilter()">
+            <div>
+                <mat-radio-group class="radioGroup" (click)="$event.stopPropagation()" [(ngModel)]="costFilter">
+                    <mat-radio-button class="radioButton" *ngFor="let costRange of displayedCostRanges" [value]="costRange">
+                        {{costRange}}
+                    </mat-radio-button>
+                </mat-radio-group>
+                <button class="radioGroup" (click)="$event.stopPropagation()" (click)="openDialogAddFilter()">Add Custom
+                    Range
+                </button>
+            </div>
+            <div class="filterButtons">
+                <button mat-button (click)="cancelCostFilter()">Cancel</button>
+                <button mat-button [disabled]="costInputCheck()" (click)="$event.stopPropagation()"
+                    (click)="resetCostFilter()">Reset</button>
+                <button mat-button (click)="submitCostFilter()">Submit
+                </button>
+            </div>
         </mat-menu>
 
-        <button mat-icon-button
-            [matMenuTriggerFor]="sortFilterMenu"
-            [disableRipple]="true"
-        >
+        <button mat-icon-button [matMenuTriggerFor]="sortFilterMenu" [disableRipple]="true">
             <mat-icon>sort</mat-icon>
         </button>
-        <mat-menu #sortFilterMenu="matMenu" xPosition="after">
+        <mat-menu #sortFilterMenu="matMenu" xPosition="after" (closed)="cancelSortFilter()">
             <div>
-                <mat-radio-group 
-                    class="radioGroup" 
-                    (click)="$event.stopPropagation()"
-                    [(ngModel)]="sortFilter"
-                >
+                <mat-radio-group class="radioGroup" (click)="$event.stopPropagation()" [(ngModel)]="sortFilter">
                     <mat-radio-button class="radioButton" value="CLH">Cost Low-High</mat-radio-button>
                     <mat-radio-button class="radioButton" value="CHL">Cost High-Low</mat-radio-button>
                     <mat-radio-button class="radioButton" value="DOR">Date Oldest-Recent</mat-radio-button>
-                    <mat-radio-button class="radioButton"value="DRO">Date Recent-Oldest</mat-radio-button>
+                    <mat-radio-button class="radioButton" value="DRO">Date Recent-Oldest</mat-radio-button>
                 </mat-radio-group>
-                <p>{{sortFilter}}</p>
             </div>
-            <div class="sortFilterButtons">
-                <mat-dialog-actions align="center">
-                    <button mat-button>Cancel</button>
-                    <button mat-button 
-                      (click)="$event.stopPropagation()"
-                      [disabled]="sortInputCheck()"
-                      >Submit
-                    </button>
-                </mat-dialog-actions>
+            <div class="filterButtons">
+                <button mat-button (click)="cancelSortFilter()">Cancel</button>
+                <button mat-button [disabled]="sortInputCheck()" (click)="$event.stopPropagation()"
+                    (click)="resetSortFilter()">Reset</button>
+                <button mat-button (click)="submitSortFilter()">Submit
+                </button>
             </div>
         </mat-menu>
     </div>
     <div class="subHeader">
-        <input 
-            class="searchBar"
-            type="text"
-            id="search"
-            name="search"
-            [(ngModel)]="search"
-        />
-        <button mat-icon-button
-            [disableRipple]="true"
-            (click)="findExpense()"
-        >
+        <input class="searchBar" type="text" id="search" name="search" [(ngModel)]="search" />
+        <button mat-icon-button [disableRipple]="true" (click)="findExpense()">
             <mat-icon>search</mat-icon>
         </button>
     </div>
 </div>
 
-<div>
-    <app-filter [showFilter]="filterType"></app-filter>
-</div>
-
-<app-expense 
-    *ngFor="let expense of displayedExpenses | slice : startPage:paginationLimit"
-    [expense]="expense"
-    (deleteOnClickExpense)="openDialogDelete(expense)"
-    (updateOnClickExpense)="openDialogUpdate(expense)"
-> 
+<app-expense *ngFor="let expense of displayedExpenses | slice : startPage:paginationLimit" [expense]="expense"
+    (deleteOnClickExpense)="openDialogDelete(expense)" (updateOnClickExpense)="openDialogUpdate(expense)">
 </app-expense>
 
 <div style="text-align:center">
-    <button mat-icon-button
-        (click)="(showMore())"
-        [disabled]="(showMoreCheck())"
-    >
+    <button mat-icon-button (click)="(showMore())" [disabled]="(showMoreCheck())">
         <mat-icon>expand_more</mat-icon>
     </button>
 
-    <button mat-icon-button
-        (click)="(showLess())"
-        [disabled]="(showLessCheck())"
-    >
+    <button mat-icon-button (click)="(showLess())" [disabled]="(showLessCheck())">
         <mat-icon>expand_less</mat-icon>
     </button>
 </div>

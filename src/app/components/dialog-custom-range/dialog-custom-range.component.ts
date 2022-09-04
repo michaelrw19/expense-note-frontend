@@ -15,18 +15,10 @@ export class DialogCustomRangeComponent implements OnInit {
 
   public title: string;
 
-  public id?: number;
-  public cost: number;
-  public description: string;
-  public date: string;
-  public Date: Date;
-  public editData: boolean;
-
   public val1: string;
   public val2: string;
   public operation: string = "-";
   public leftInputDisabled: boolean = false;
-  public costRange: string = "";
 
   ngOnInit(): void {
   }
@@ -37,14 +29,11 @@ export class DialogCustomRangeComponent implements OnInit {
     this.val2 = "";
   }
 
-  public makeCostRange(): void {
+  public makeCostRange(): string {
     if (this.leftInputDisabled) {
-      this.costRange = this.operation + " " + this.val2;
+      return this.operation + " $" + this.val2;
     }
-    else {
-      this.costRange = this.val1 + this.operation + this.val2;
-    }
-
+    return "$" + this.val1 + " " + this.operation + " $" + this.val2;
   }
 
   checkInputs(): boolean {
@@ -63,8 +52,8 @@ export class DialogCustomRangeComponent implements OnInit {
   }
 
   public onSubmit(): void {
-    this.makeCostRange()
-    this.dialogRef.close(this.costRange);
+    let range = this.makeCostRange()
+    this.dialogRef.close(range);
   }
 
 }

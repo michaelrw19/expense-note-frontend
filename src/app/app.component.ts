@@ -12,12 +12,12 @@ import * as XLSX from 'xlsx';
 export class AppComponent {
   title = 'expense-note';
   public currentYear: string = new Date().getFullYear().toString();
-  public years: string[] = [this.currentYear];
+  public years: string[] = [this.currentYear, "2023"];
   //To be added: add year functionality 
 
   public months: string[] = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
  
-  public costs: number[] = [];
+  public allCosts: Map<string, number[]> = new Map<string, number[]>([])
 
   public totalCost: string = "";
 
@@ -32,14 +32,13 @@ export class AppComponent {
 
   ngOnInit(): void {
     this.getTotalCost()
-    this.getTotalCostPerMonth()
+    this.getAllCost() 
   }
 
-  //Add a button to call for this function again
-
-  public updateCostsInfo(): void {
+  public updateCostsInfo(year: string): void {
+    console.log(year)
     this.getTotalCost()
-    this.getTotalCostPerMonth()
+    this.getTotalCostPerMonth(year)
     this.disableExcelDownload = true
     this.downloadButtonMessage = "Generate excel file first to download the file"
   }
@@ -55,10 +54,26 @@ export class AppComponent {
     );
   }
 
-  public getTotalCostPerMonth(): void {
-    this.expenseService.getTotalCostPerMonth(this.currentYear.toString()).subscribe(
+  public getCost(year: string, index: number): number {
+    let arr = this.allCosts.get(year)
+    if(arr) {
+      return arr[index]
+    }
+    return 0;
+  }
+
+  public getAllCost(): void {
+    for (var year of this.years) {
+      this.getTotalCostPerMonth(year);
+    }
+  }
+
+  public getTotalCostPerMonth(year: string): void {
+    //Convert this to a loop to cover all year, add the response to the appropriate key, then call each key from html 
+    //Also consider this function to handle any updates (maybe add year paramter to update only specific year, not all)
+    this.expenseService.getTotalCostPerMonth(year).subscribe(
       (response: number[]) => {
-        this.costs = response;
+        this.allCosts.set(year, response)
       },
       (error: HttpErrorResponse) => {
         alert(error.message);  
@@ -70,7 +85,6 @@ export class AppComponent {
     this.expenseService.getExpensesByYear(year).subscribe(
       (response: Expense[]) => {
         this.allExpenses = this.allExpenses.set(year, response)
-        console.log(this.allExpenses)
       },
       (error: HttpErrorResponse) => {
         alert(error.message);
@@ -102,5 +116,5 @@ export class AppComponent {
 
   public async delay(ms: number): Promise<void> {
     return new Promise( resolve => setTimeout(resolve, ms) );
-}
+  }
 }

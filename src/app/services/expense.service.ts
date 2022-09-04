@@ -13,6 +13,10 @@ export class ExpenseService {
 
   constructor( private http: HttpClient ) { }
 
+  public getTest(date: string): Observable<string>{
+    return this.http.get<string>(`${this.apiServerUrl}/expense/TEST?stringRange=${date}`);
+  }
+
   public getTotalCost(date: string): Observable<string>{
     return this.http.get<string>(`${this.apiServerUrl}/expense/totalCost?date=${date}`);
   }
@@ -25,6 +29,10 @@ export class ExpenseService {
     return this.http.get<Expense[]>(`${this.apiServerUrl}/expense/getExpensesByMonth?date=${date}`);
   }
 
+  public getExpensesByMonthSorted(date: string, sortCode: string): Observable<Expense[]>{
+    return this.http.get<Expense[]>(`${this.apiServerUrl}/expense/getExpensesByMonthSorted?date=${date}&sortCode=${sortCode}`);
+  }
+
   public getExpensesByYear(year: string): Observable<Expense[]>{
     return this.http.get<Expense[]>(`${this.apiServerUrl}/expense/getExpensesByYear?year=${year}`);
   }
@@ -33,8 +41,8 @@ export class ExpenseService {
     return this.http.get<Expense[]>(`${this.apiServerUrl}/expense/applySearchFilter?keyword=${keyword}&date=${date}`);
   }
 
-  public applyCostFilter(range1: number, range2: number, code: string, date: string): Observable<Expense[]>{
-    return this.http.get<Expense[]>(`${this.apiServerUrl}/expense/applySearchFilter?range1=${range1}&range2=${range2}&code=${code}&date=${date}`);
+  public applyCostFilter(rangeString: string, code: string, date: string): Observable<Expense[]>{
+    return this.http.get<Expense[]>(`${this.apiServerUrl}/expense/applyCostFilter?rangeString=${rangeString}&code=${code}&date=${date}`);
   }
 
   public getExpenses():Observable<Expense[]>{

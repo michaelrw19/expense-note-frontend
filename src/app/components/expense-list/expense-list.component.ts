@@ -6,8 +6,11 @@ import { Expense } from 'src/app/interface/expense';
 import { ExpenseService } from 'src/app/services/expense.service';
 import { DialogDeleteComponent } from 'src/app/components/dialog-delete/dialog-delete.component'
 import { DialogAddEditComponent } from 'src/app/components/dialog-add-edit/dialog-add-edit.component';
+import { DialogCustomRangeComponent } from '../dialog-custom-range/dialog-custom-range.component';
 
 import { FilterComponent } from '../filter/filter.component';
+
+import { decodeEntity } from 'html-entities';
 
 @Component({
   selector: 'app-expense-list',
@@ -18,7 +21,7 @@ export class ExpenseListComponent implements OnInit, AfterViewInit {
   @Input() year: string;
   @Input() month: string;
 
-  @Output() costChangedEvent = new EventEmitter<boolean>();
+  @Output() costChangedEvent = new EventEmitter<string>();
 
   @ViewChild(FilterComponent)
   public filter: FilterComponent;
@@ -46,6 +49,11 @@ export class ExpenseListComponent implements OnInit, AfterViewInit {
   public monthFilter: string;
 
   public sortFilter: string = "";
+  public previousSortFilter: string = this.sortFilter;
+
+  public costFilter: string = "";
+  public previousCostFilter: string = this.costFilter;
+  public displayedCostRanges: string[] = ['$0 - $20', '$20 - $40', '$40 - $60', '$60 - $80', '$80 - $100'];
 
   ngOnInit(): void {
     this.setMonthFilter();
@@ -57,7 +65,7 @@ export class ExpenseListComponent implements OnInit, AfterViewInit {
   ///// Emmit Output Functions /////
 
   public emit(): void {
-    this.costChangedEvent.emit(true)
+    this.costChangedEvent.emit(this.year)
   }
   ///// Emmit Output Functions /////
 
@@ -79,15 +87,110 @@ export class ExpenseListComponent implements OnInit, AfterViewInit {
   }
   ///// Pagination Functions /////
 
-  ///// Filter Functions /////
+  ///// Cost Filter Functions /////
   public showCostFilter(): void {
     this.filterType = "cost";
     this.filter.showCostFilter();
   }
+
+  public openDialogAddFilter(): void {
+    const dialogRef = this.dialog.open(DialogCustomRangeComponent, {
+      width: '255px',
+    });
+    
+    dialogRef.afterClosed().subscribe(
+      result => { 
+        if(result !== null) {
+          this.displayedCostRanges.push(result)
+        }
+    });
+  }
+
+  public costInputCheck(): boolean {
+    return this.costFilter === "" || this.costFilter === undefined
+  }
+
+  public cancelCostFilter(): void {
+    this.costFilter = this.previousCostFilter;
+  }
+
+  public resetCostFilter(): void {
+    this.costFilter = "";
+  }
+
+  public getCostFilterCode(filter: string): string {
+    if(filter.includes(decodeEntity('&gt;'))) {
+      return "GT"
+    }
+    else if(filter.includes(decodeEntity('&ge;'))) {
+      return "GTE"
+    }
+    else if(filter.includes(decodeEntity('&lt;'))) {
+      return "LT"
+    }
+    else if(filter.includes(decodeEntity('&le;'))) {
+      return "LTE"
+    }
+    return "B";
+  }
+
+  public submitCostFilter(): void {
+    this.previousCostFilter = this.costFilter;
+    let code = this.getCostFilterCode(this.costFilter)
+    
+    if(this.costFilter !== "") {
+      this.expenseService.applyCostFilter(this.costFilter, code, this.monthFilter).subscribe(
+        (response: Expense[]) => {
+          console.log(response)
+          this.displayedExpenses = response
+        },
+        (error: HttpErrorResponse) => {
+          alert(error.message);
+        }
+      );
+    }
+    else {
+      this.displayedExpenses = this.allExpenses
+    }
+  }
+  ///// Cost Filter Functions /////
+
+  ///// Sort Filter Functions /////
   public sortInputCheck(): boolean {
     return this.sortFilter === "" || this.sortFilter === undefined
   }
-  ///// Filter Functions /////
+
+  public cancelSortFilter(): void {
+    this.sortFilter = this.previousSortFilter;
+  }
+
+  public resetSortFilter(): void {
+    this.sortFilter = "";
+  }
+
+  public submitSortFilter(): void {
+    this.previousSortFilter = this.sortFilter;
+    if(this.sortFilter !== "") {
+      this.expenseService.getExpensesByMonthSorted(this.monthFilter, this.sortFilter).subscribe(
+        (response: Expense[]) => {
+          if(this.sortFilter === "CHL" || this.sortFilter === "DRO") {
+            this.displayedExpenses = response.reverse()
+          }
+          else if (this.sortFilter === "CLH" || this.sortFilter === "DOR") {
+            this.displayedExpenses = response
+          }
+          this.previousSortFilter = this.sortFilter;
+        },
+        (error: HttpErrorResponse) => {
+          alert(error.message);
+        }
+      );
+    }
+    else {
+      this.displayedExpenses = this.allExpenses;
+    }
+  }
+  ///// Sort Filter Functions /////
 
 
   ///// Search Bar Functions /////
@@ -112,7 +215,6 @@ export class ExpenseListComponent implements OnInit, AfterViewInit {
     }
   }
   ///// Search Bar Functions /////
-
 
   ///// Dialog Functions /////
   public openDialogAdd(): void {

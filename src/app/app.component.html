@@ -2,15 +2,11 @@
 
 <h1>Total spending this year: {{totalCost}} CAD</h1>
 
-<button
-    (click) = "generateExcel()">
+<button (click)="generateExcel()">
     Generate Excel File
 </button>
 
-<button
-    [disabled] = "disableExcelDownload"
-    (click) = "exportExcel()"
-    title={{downloadButtonMessage}}>
+<button id="downloadBtn" [disabled]="disableExcelDownload" (click)="exportExcel()" title={{downloadButtonMessage}}>
     Download Excel File
 </button>
 
@@ -28,73 +24,67 @@
                     <p>
                         {{month}}
                         <br>
-                        {{costs[i]}} CAD
+                        {{getCost(year, i)}} CAD
                     </p>
                 </ng-template>
                 <div class="container">
-                    <app-expense-list
-                        year={{year}}
-                        month={{month}}
-                        (costChangedEvent)="updateCostsInfo()"
-                    ></app-expense-list>
+                    <app-expense-list year={{year}} month={{month}} (costChangedEvent)="updateCostsInfo($event)">
+                    </app-expense-list>
                 </div>
             </mat-tab>
         </mat-tab-group>
     </mat-expansion-panel>
 </mat-accordion>
 
-<!-- Issues: 
-    1. Running setYearlyExpenses causes error in server side, infinite loop of expenses
-    2. Need to export the latest expenses, if you add an export, you'll get the outdated list of expenses
--->
-    <table id="excel-table" > 
-        <div *ngFor="let year of years">
-            <div *ngIf="year"></div>
+<table id="excel-table">
+    <div *ngFor="let year of years">
+        <div *ngIf="year"></div>
+        <tr>
+            <th colspan="3">{{year}}</th>
+        </tr>
+        <tr>
+            <th>Date</th>
+            <th>Description</th>
+            <th>Cost</th>
+
+        </tr>
+        <tr *ngFor="let expense of allExpenses.get(year)">
+            <td>{{expense.date}}</td>
+            <td>{{expense.description}}</td>
+            <td>{{expense.cost}}</td>
+        </tr>
+        <tr>
+            <td colspan="3"></td>
+        </tr>
+    </div>
+</table>
+
+<!--
+<table id="excel"> 
+    <div *ngFor="let year of years">
+        <tr>
+            <th colspan="36">{{year}}</th>
+        </tr>
+        <div *ngFor="let month of months">
             <tr>
-                <th colspan="3">{{year}}</th>
+                <th colspan="3">
+                    {{month}}
+                </th>
             </tr>
             <tr>       
                 <th>Date</th> 
                 <th>Description</th>  
                 <th>Cost</th> 
-                
             </tr>    
-            <tr *ngFor="let expense of allExpenses.get(year)">
-                <td>{{expense.date}}</td>  
-                <td>{{expense.description}}</td> 
-                <td>{{expense.cost}}</td> 
+            <tr *ngFor="let month of months">
+                <td>test1</td>  
+                <td>test2</td> 
+                <td>test3</td> 
             </tr>  
             <tr>
-                <td colspan="3"></td>
+                <td colspan="36"></td>
             </tr>
         </div>
-    </table>
-
-<!--
-  <table id="excel-table"> 
-    <div *ngFor="let year of years">
-        <tr>
-            <th colspan="36">{{year}}</th>
-        </tr>
-        <tr>
-            <th *ngFor="let month of months" colspan="3">
-                {{month}}
-            </th>
-        </tr>
-        <tr>       
-            <th>Date</th> 
-            <th>Description</th>  
-            <th>Cost</th> 
-            
-        </tr>    
-        <tr *ngFor="let month of months">
-            <td>test1</td>  
-            <td>test2</td> 
-            <td>test3</td> 
-        </tr>  
-        <tr>
-            <td colspan="36"></td>
-        </tr>
     </div>
-</table>  
+</table> 
 -->
