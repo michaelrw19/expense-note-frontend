@@ -25,7 +25,7 @@
                 <button mat-button (click)="cancelCostFilter()">Cancel</button>
                 <button mat-button [disabled]="costInputCheck()" (click)="$event.stopPropagation()"
                     (click)="resetCostFilter()">Reset</button>
-                <button mat-button (click)="submitCostFilter()">Submit
+                <button mat-button (click)="submitFilters()">Submit
                 </button>
             </div>
         </mat-menu>
@@ -46,14 +46,14 @@
                 <button mat-button (click)="cancelSortFilter()">Cancel</button>
                 <button mat-button [disabled]="sortInputCheck()" (click)="$event.stopPropagation()"
                     (click)="resetSortFilter()">Reset</button>
-                <button mat-button (click)="submitSortFilter()">Submit
+                <button mat-button (click)="submitFilters()">Submit
                 </button>
             </div>
         </mat-menu>
     </div>
     <div class="subHeader">
-        <input class="searchBar" type="text" id="search" name="search" [(ngModel)]="search" />
-        <button mat-icon-button [disableRipple]="true" (click)="findExpense()">
+        <input class="searchBar" type="text" id="searchKeyword" name="searchKeyword" [(ngModel)]="searchKeyword" />
+        <button mat-icon-button [disableRipple]="true" (click)="submitFilters()">
             <mat-icon>search</mat-icon>
         </button>
     </div>

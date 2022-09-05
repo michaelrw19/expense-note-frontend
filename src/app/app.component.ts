@@ -12,7 +12,7 @@ import * as XLSX from 'xlsx';
 export class AppComponent {
   title = 'expense-note';
   public currentYear: string = new Date().getFullYear().toString();
-  public years: string[] = [this.currentYear, "2023"];
+  public years: string[] = [this.currentYear];
   //To be added: add year functionality 
 
   public months: string[] = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]

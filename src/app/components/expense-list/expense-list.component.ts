@@ -35,10 +35,6 @@ export class ExpenseListComponent implements OnInit, AfterViewInit {
   ngAfterViewInit(): void {
    
   }
-  public search: string = "";
-
-  public filterType: String = "";
-
   public displayedExpenses: Expense[] = [];
   public allExpenses: Expense[] = [];
   public startPage: number;
@@ -47,6 +43,9 @@ export class ExpenseListComponent implements OnInit, AfterViewInit {
 
   public months: string[] = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
   public monthFilter: string;
+
+  //Filters
+  public searchKeyword: string = "";
 
   public sortFilter: string = "";
   public previousSortFilter: string = this.sortFilter;
@@ -87,12 +86,29 @@ export class ExpenseListComponent implements OnInit, AfterViewInit {
   }
   ///// Pagination Functions /////
 
-  ///// Cost Filter Functions /////
-  public showCostFilter(): void {
-    this.filterType = "cost";
-    this.filter.showCostFilter();
+  ///// Submit All Filter /////
+  public submitFilters(): void {
+    let costFilter = this.convertCostFilter()
+    this.expenseService.applyFilters(this.monthFilter, costFilter, this.sortFilter, this.searchKeyword).subscribe(
+      (response: Expense[]) => {
+        if(this.sortFilter === "CHL" || this.sortFilter === "DRO") {
+          this.displayedExpenses = response.reverse()
+        }
+        else if (this.sortFilter === "CLH" || this.sortFilter === "DOR") {
+          this.displayedExpenses = response
+        }
+        this.displayedExpenses = response
+      },
+      (error: HttpErrorResponse) => {
+        alert(error.message);
+      }
+    );
+    this.previousCostFilter = this.costFilter;
+    this.previousSortFilter = this.sortFilter;
   }
+  ///// Submit All Filter /////
 
+  ///// Cost Filter Functions /////
   public openDialogAddFilter(): void {
     const dialogRef = this.dialog.open(DialogCustomRangeComponent, {
       width: '255px',
@@ -118,40 +134,21 @@ export class ExpenseListComponent implements OnInit, AfterViewInit {
     this.costFilter = "";
   }
 
-  public getCostFilterCode(filter: string): string {
+  public convertCostFilter(): string {
+    let filter = this.costFilter
     if(filter.includes(decodeEntity('&gt;'))) {
-      return "GT"
+      return filter.replace(decodeEntity('&gt;'), ">")
     }
     else if(filter.includes(decodeEntity('&ge;'))) {
-      return "GTE"
+      return filter.replace(decodeEntity('&ge;'), ">=")
     }
     else if(filter.includes(decodeEntity('&lt;'))) {
-      return "LT"
+      return filter.replace(decodeEntity('&lt;'), "<")
     }
     else if(filter.includes(decodeEntity('&le;'))) {
-      return "LTE"
+      return filter.replace(decodeEntity('&le;'), "<=")
     }
-    return "B";
-  }
-
-  public submitCostFilter(): void {
-    this.previousCostFilter = this.costFilter;
-    let code = this.getCostFilterCode(this.costFilter)
-    
-    if(this.costFilter !== "") {
-      this.expenseService.applyCostFilter(this.costFilter, code, this.monthFilter).subscribe(
-        (response: Expense[]) => {
-          console.log(response)
-          this.displayedExpenses = response
-        },
-        (error: HttpErrorResponse) => {
-          alert(error.message);
-        }
-      );
-    }
-    else {
-      this.displayedExpenses = this.allExpenses
-    }
+    return filter;
   }
   ///// Cost Filter Functions /////
 
@@ -167,54 +164,7 @@ export class ExpenseListComponent implements OnInit, AfterViewInit {
   public resetSortFilter(): void {
     this.sortFilter = "";
   }
-
-  public submitSortFilter(): void {
-    this.previousSortFilter = this.sortFilter;
-    if(this.sortFilter !== "") {
-      this.expenseService.getExpensesByMonthSorted(this.monthFilter, this.sortFilter).subscribe(
-        (response: Expense[]) => {
-          if(this.sortFilter === "CHL" || this.sortFilter === "DRO") {
-            this.displayedExpenses = response.reverse()
-          }
-          else if (this.sortFilter === "CLH" || this.sortFilter === "DOR") {
-            this.displayedExpenses = response
-          }
-          this.previousSortFilter = this.sortFilter;
-        },
-        (error: HttpErrorResponse) => {
-          alert(error.message);
-        }
-      );
-    }
-    else {
-      this.displayedExpenses = this.allExpenses;
-    }
-  }
-  ///// Sort Filter Functions /////
-
-
-  ///// Search Bar Functions /////
-  //To Fix: search filter not applied when new expenses added (FIXED)
-  public searchFilter(keyword: string): void {
-    this.expenseService.applySearchFilter(keyword, this.monthFilter).subscribe(
-      (response: Expense[]) => {
-        this.displayedExpenses = response
-      },
-      (error: HttpErrorResponse) => {
-        alert(error.message);
-      }
-    );
-  }
-
-  public findExpense(): void{
-    if(this.search !== "") {
-      this.searchFilter(this.search);
-    }
-    else {
-      this.displayedExpenses = this.allExpenses;
-    }
-  }
-  ///// Search Bar Functions /////
+  ///// Sort Filter Functions ////
 
   ///// Dialog Functions /////
   public openDialogAdd(): void {
@@ -318,7 +268,7 @@ export class ExpenseListComponent implements OnInit, AfterViewInit {
         this.getTotalCost();
         this.allExpenses = response;    
         this.displayedExpenses = this.allExpenses;
-        this.findExpense();
+        this.submitFilters();
       },
       (error: HttpErrorResponse) => {
         alert(error.message);

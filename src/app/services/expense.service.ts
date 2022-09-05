@@ -29,12 +29,17 @@ export class ExpenseService {
     return this.http.get<Expense[]>(`${this.apiServerUrl}/expense/getExpensesByMonth?date=${date}`);
   }
 
-  public getExpensesByMonthSorted(date: string, sortCode: string): Observable<Expense[]>{
-    return this.http.get<Expense[]>(`${this.apiServerUrl}/expense/getExpensesByMonthSorted?date=${date}&sortCode=${sortCode}`);
-  }
-
   public getExpensesByYear(year: string): Observable<Expense[]>{
     return this.http.get<Expense[]>(`${this.apiServerUrl}/expense/getExpensesByYear?year=${year}`);
+  }
+
+  //Filters
+  public applyFilters(date: string, costFilter: string, sortFilter: string, searchKeyword: string): Observable<Expense[]>{
+    return this.http.get<Expense[]>(`${this.apiServerUrl}/expense/applyFilters?date=${date}&costFilter=${costFilter}&sortFilter=${sortFilter}&searchKeyword=${searchKeyword}`);
+  }
+
+  public getExpensesByMonthSorted(date: string, sortCode: string): Observable<Expense[]>{
+    return this.http.get<Expense[]>(`${this.apiServerUrl}/expense/getExpensesByMonthSorted?date=${date}&sortCode=${sortCode}`);
   }
 
   public applySearchFilter(keyword: string, date: string): Observable<Expense[]>{
@@ -44,6 +49,8 @@ export class ExpenseService {
   public applyCostFilter(rangeString: string, code: string, date: string): Observable<Expense[]>{
     return this.http.get<Expense[]>(`${this.apiServerUrl}/expense/applyCostFilter?rangeString=${rangeString}&code=${code}&date=${date}`);
   }
+
+  //Filters
 
   public getExpenses():Observable<Expense[]>{
     return this.http.get<Expense[]>(`${this.apiServerUrl}/expense/all`);
