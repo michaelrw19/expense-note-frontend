@@ -8,8 +8,6 @@ import { DialogDeleteComponent } from 'src/app/components/dialog-delete/dialog-d
 import { DialogAddEditComponent } from 'src/app/components/dialog-add-edit/dialog-add-edit.component';
 import { DialogCustomRangeComponent } from '../dialog-custom-range/dialog-custom-range.component';
 
-import { FilterComponent } from '../filter/filter.component';
-
 import { decodeEntity } from 'html-entities';
 
 @Component({
@@ -22,9 +20,6 @@ export class ExpenseListComponent implements OnInit, AfterViewInit {
   @Input() month: string;
 
   @Output() costChangedEvent = new EventEmitter<string>();
-
-  @ViewChild(FilterComponent)
-  public filter: FilterComponent;
 
   constructor(
     private expenseService: ExpenseService,

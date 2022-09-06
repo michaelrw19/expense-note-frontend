@@ -8,7 +8,6 @@ import { ExpenseComponent } from './components/expense/expense.component';
 import { DialogAddEditComponent } from './components/dialog-add-edit/dialog-add-edit.component';
 import { DialogDeleteComponent } from './components/dialog-delete/dialog-delete.component';
 import { DialogCustomRangeComponent } from './components/dialog-custom-range/dialog-custom-range.component';
-import { FilterComponent } from './components/filter/filter.component';
 
 
 import { HttpClientModule } from '@angular/common/http';
@@ -33,7 +32,6 @@ import { MatMenuModule } from '@angular/material/menu';
     ExpenseComponent,
     DialogAddEditComponent,
     DialogDeleteComponent,
-    FilterComponent,
     DialogCustomRangeComponent
   ],
   imports: [
