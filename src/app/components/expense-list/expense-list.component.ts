@@ -10,12 +10,14 @@ import { DialogCustomRangeComponent } from '../dialog-custom-range/dialog-custom
 
 import { decodeEntity } from 'html-entities';
 
+import { ChartConfiguration, ChartOptions, ChartType } from "chart.js";
+
 @Component({
   selector: 'app-expense-list',
   templateUrl: './expense-list.component.html',
   styleUrls: ['./expense-list.component.css']
 })
-export class ExpenseListComponent implements OnInit, AfterViewInit { 
+export class ExpenseListComponent implements OnInit, AfterViewInit {
   @Input() year: string;
   @Input() month: string;
 
@@ -24,14 +26,15 @@ export class ExpenseListComponent implements OnInit, AfterViewInit {
   constructor(
     private expenseService: ExpenseService,
     public dialog: MatDialog
-    ) { 
+  ) {
   }
 
   ngAfterViewInit(): void {
-   
+
   }
   public displayedExpenses: Expense[] = [];
   public allExpenses: Expense[] = [];
+
   public startPage: number;
   public paginationLimit: number;
   public totalCost: string = "";
@@ -49,6 +52,12 @@ export class ExpenseListComponent implements OnInit, AfterViewInit {
   public previousCostFilter: string = this.costFilter;
   public displayedCostRanges: string[] = ['$0 - $20', '$20 - $40', '$40 - $60', '$60 - $80', '$80 - $100'];
 
+  //Line Chart
+  public costPerMonth: number[] = []
+  public lineChartData: ChartConfiguration<'line'>['data']
+  public lineChartOptions: ChartOptions<'line'>
+  public lineChartLegend = false;
+
   ngOnInit(): void {
     this.setMonthFilter();
     this.getExpenses();
@@ -65,28 +74,69 @@ export class ExpenseListComponent implements OnInit, AfterViewInit {
 
   ///// Pagination Functions /////
   public showMore(): void {
-      this.paginationLimit += 5;
+    this.paginationLimit += 5;
   }
   public showMoreCheck(): boolean {
     return this.displayedExpenses.length <= this.paginationLimit
   }
-  public showLess(): void{
+  public showLess(): void {
     this.paginationLimit -= 5;
   }
   public showLessCheck(): boolean {
-    if(this.displayedExpenses.length == 5) {
+    if (this.displayedExpenses.length == 5) {
       return true;
     }
     return this.paginationLimit == 5
   }
   ///// Pagination Functions /////
 
+  ///// Line Chart Functions /////
+  public async generateLineChart() {
+    //Chart only shown in Janury, not in other months
+    //console.log(this.costPerMonth)
+    await this.delay(1000)
+    //console.log(this.costPerMonth)
+    let lineChartData: ChartConfiguration<'line'>['data'] = {
+      labels: [
+        'January',
+        'February',
+        'March',
+        'April',
+        'May',
+        'June',
+        'July',
+        'August',
+        'September',
+        'October',
+        'November',
+        'December'
+      ],
+      datasets: [
+        {
+          data: this.costPerMonth,
+          label: this.year,
+          fill: false,
+          tension: 0.5,
+          borderColor: 'black',
+          backgroundColor: 'rgba(255,0,0,0)'
+        }
+      ]
+    };
+    let lineChartOptions: ChartOptions<'line'> = {
+      responsive: false
+    };
+
+    this.lineChartData = lineChartData;
+    this.lineChartOptions = lineChartOptions;
+  }
+  ///// Line Chart Functions /////
+
   ///// Submit All Filter /////
   public submitFilters(): void {
     let costFilter = this.convertCostFilter()
     this.expenseService.applyFilters(this.monthFilter, costFilter, this.sortFilter, this.searchKeyword).subscribe(
       (response: Expense[]) => {
-        if(this.sortFilter === "CHL" || this.sortFilter === "DRO") {
+        if (this.sortFilter === "CHL" || this.sortFilter === "DRO") {
           this.displayedExpenses = response.reverse()
         }
         else if (this.sortFilter === "CLH" || this.sortFilter === "DOR") {
@@ -108,13 +158,13 @@ export class ExpenseListComponent implements OnInit, AfterViewInit {
     const dialogRef = this.dialog.open(DialogCustomRangeComponent, {
       width: '255px',
     });
-    
+
     dialogRef.afterClosed().subscribe(
-      result => { 
-        if(result !== null) {
+      result => {
+        if (result !== null) {
           this.displayedCostRanges.push(result)
         }
-    });
+      });
   }
 
   public costInputCheck(): boolean {
@@ -131,16 +181,16 @@ export class ExpenseListComponent implements OnInit, AfterViewInit {
 
   public convertCostFilter(): string {
     let filter = this.costFilter
-    if(filter.includes(decodeEntity('&gt;'))) {
+    if (filter.includes(decodeEntity('&gt;'))) {
       return filter.replace(decodeEntity('&gt;'), ">")
     }
-    else if(filter.includes(decodeEntity('&ge;'))) {
+    else if (filter.includes(decodeEntity('&ge;'))) {
       return filter.replace(decodeEntity('&ge;'), ">=")
     }
-    else if(filter.includes(decodeEntity('&lt;'))) {
+    else if (filter.includes(decodeEntity('&lt;'))) {
       return filter.replace(decodeEntity('&lt;'), "<")
     }
-    else if(filter.includes(decodeEntity('&le;'))) {
+    else if (filter.includes(decodeEntity('&le;'))) {
       return filter.replace(decodeEntity('&le;'), "<=")
     }
     return filter;
@@ -170,13 +220,13 @@ export class ExpenseListComponent implements OnInit, AfterViewInit {
       width: '255px',
       data: newData
     });
-    
+
     dialogRef.afterClosed().subscribe(
-      result => { 
-        if(result != null) {
+      result => {
+        if (result != null) {
           this.addExpense(result)
         }
-    });
+      });
   }
 
   public openDialogUpdate(expense: Expense): void {
@@ -191,13 +241,13 @@ export class ExpenseListComponent implements OnInit, AfterViewInit {
       width: '255px',
       data: newData
     });
-    
+
     dialogRef.afterClosed().subscribe(
       result => {
-        if(result != null) {
+        if (result != null) {
           this.updateExpense(result)
         }
-    });
+      });
   }
 
   public openDialogDelete(expense: Expense): void {
@@ -212,13 +262,13 @@ export class ExpenseListComponent implements OnInit, AfterViewInit {
       width: '255px',
       data: newData
     });
-    
+
     dialogRef.afterClosed().subscribe(
-      result => { 
-        if(result != null) {
+      result => {
+        if (result != null) {
           this.deleteExpense(result)
         }
-    });
+      });
   }
   ///// Dialog Functions /////
 
@@ -257,13 +307,27 @@ export class ExpenseListComponent implements OnInit, AfterViewInit {
     );
   }
 
+  public getTotalCostPerMonth(year: string): void {
+    this.expenseService.getTotalCostPerMonth(year).subscribe(
+      (response: number[]) => {
+        this.costPerMonth = response;
+      },
+      (error: HttpErrorResponse) => {
+        alert(error.message);  
+      }
+    );
+  }
+
   public getExpenses(): void {
     this.expenseService.getExpensesByMonth(this.monthFilter).subscribe(
       (response: Expense[]) => {
         this.getTotalCost();
-        this.allExpenses = response;    
+        this.allExpenses = response;
         this.displayedExpenses = this.allExpenses;
         this.submitFilters();
+
+        this.getTotalCostPerMonth(this.year);
+        this.generateLineChart();
       },
       (error: HttpErrorResponse) => {
         alert(error.message);
@@ -271,7 +335,7 @@ export class ExpenseListComponent implements OnInit, AfterViewInit {
     );
   }
 
-  public addExpense(expense: Expense){
+  public addExpense(expense: Expense) {
     this.expenseService.addExpense(expense).subscribe(
       (response: Expense) => {
         this.getExpenses();
@@ -282,7 +346,7 @@ export class ExpenseListComponent implements OnInit, AfterViewInit {
       }
     );
   }
-  
+
   public updateExpense(expense: any) {
     this.expenseService.updateExpense(expense).subscribe(
       (response: Expense) => {
@@ -305,12 +369,10 @@ export class ExpenseListComponent implements OnInit, AfterViewInit {
         alert(error.message);
       }
     );
-    }
-
+  }
   ///// Service Functions /////
 
   ///// Service Helper Functions /////
-
   public setMonthFilter(): void {
     let month = this.months.indexOf(this.month) + 1;
     if (month < 10) {
@@ -321,4 +383,8 @@ export class ExpenseListComponent implements OnInit, AfterViewInit {
     }
   }
   ///// Service Helper Functions /////
+
+  public async delay(ms: number): Promise<void> {
+    return new Promise( resolve => setTimeout(resolve, ms) );
   }
+}

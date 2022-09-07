@@ -9,6 +9,23 @@
     background-color: rgb(255, 255, 255);
 }
 
+.upperContainer {
+    max-width: 500px;
+    margin: 30px auto;
+    overflow: auto;
+    min-height: 300px;
+    border: 1px solid black;
+    padding: 30px;
+    border-radius: 5px;
+    background-color: rgb(255, 255, 255);
+}
+
 .cells {
     text-align: center;
+}
+
+.lineChart {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }

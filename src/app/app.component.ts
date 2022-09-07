@@ -3,6 +3,7 @@ import { Component } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Expense } from './interface/expense';
 import * as XLSX from 'xlsx';
+import { ChartConfiguration, ChartOptions, ChartType } from "chart.js";
 
 @Component({
   selector: 'app-root',
@@ -18,6 +19,7 @@ export class AppComponent {
   public months: string[] = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
  
   public allCosts: Map<string, number[]> = new Map<string, number[]>([])
+  public costAtYearX: number[] = [];
 
   public totalCost: string = "";
 
@@ -26,17 +28,61 @@ export class AppComponent {
   public disableExcelDownload: boolean = true
   public downloadButtonMessage: string = "Generate excel file first to download the file"
 
+  public lineChartData: ChartConfiguration<'line'>['data']; 
+  public lineChartOptions: ChartOptions<'line'>;
+  public lineChartLegend: boolean;
+
   constructor (
     private expenseService: ExpenseService
   ) { }
 
   ngOnInit(): void {
     this.getTotalCost()
-    this.getAllCost() 
+    this.setAllCost() 
+    this.generateLineChart()
+  }
+
+  public async generateLineChart() {
+    await this.delay(3000)
+    let data: any = this.allCosts.get("2022") !== undefined ? this.allCosts.get("2022") : [];
+    console.log(data)
+    let lineChartData: ChartConfiguration<'line'>['data'] = {
+      labels: [
+        'January',
+        'February',
+        'March',
+        'April',
+        'May',
+        'June',
+        'July',
+        'August',
+        'September',
+        'October',
+        'November',
+        'December'
+      ],
+      datasets: [
+        {
+          data: data,
+          label: '2022',
+          fill: false,
+          tension: 0.5,
+          borderColor: 'black',
+          backgroundColor: 'rgba(255,0,0,0)'
+        }
+      ]
+    };
+    let lineChartOptions: ChartOptions<'line'> = {
+      responsive: false
+    };
+    let lineChartLegend = true;
+
+    this.lineChartData = lineChartData;
+    this.lineChartOptions = lineChartOptions;
+    this.lineChartLegend = lineChartLegend;
   }
 
   public updateCostsInfo(year: string): void {
-    console.log(year)
     this.getTotalCost()
     this.getTotalCostPerMonth(year)
     this.disableExcelDownload = true
@@ -62,18 +108,17 @@ export class AppComponent {
     return 0;
   }
 
-  public getAllCost(): void {
+  public setAllCost(): void {
     for (var year of this.years) {
       this.getTotalCostPerMonth(year);
     }
   }
 
   public getTotalCostPerMonth(year: string): void {
-    //Convert this to a loop to cover all year, add the response to the appropriate key, then call each key from html 
-    //Also consider this function to handle any updates (maybe add year paramter to update only specific year, not all)
     this.expenseService.getTotalCostPerMonth(year).subscribe(
       (response: number[]) => {
         this.allCosts.set(year, response)
+        this.costAtYearX = response
       },
       (error: HttpErrorResponse) => {
         alert(error.message);  

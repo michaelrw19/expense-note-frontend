@@ -5,6 +5,11 @@
     </button>
 </div>
 
+<div class="lineChart">
+    <canvas baseChart [type]="'line'" [data]="lineChartData" [options]="lineChartOptions" [legend]="lineChartLegend">
+    </canvas>
+</div>
+
 <div class="subHeader">
     <div>
         <button mat-icon-button [matMenuTriggerFor]="costFilterMenu" [disableRipple]="true">
@@ -13,7 +18,8 @@
         <mat-menu #costFilterMenu="matMenu" xPosition="after" (closed)="cancelCostFilter()">
             <div>
                 <mat-radio-group class="radioGroup" (click)="$event.stopPropagation()" [(ngModel)]="costFilter">
-                    <mat-radio-button class="radioButton" *ngFor="let costRange of displayedCostRanges" [value]="costRange">
+                    <mat-radio-button class="radioButton" *ngFor="let costRange of displayedCostRanges"
+                        [value]="costRange">
                         {{costRange}}
                     </mat-radio-button>
                 </mat-radio-group>

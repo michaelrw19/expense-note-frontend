@@ -1,7 +1,7 @@
   .header {
     display: flex;
     justify-content: space-between;
-    align-items:center; 
+    align-items: center;
   }
 
   .subHeader {
@@ -15,7 +15,7 @@
     border-radius: 8px;
     width: 150px;
   }
-  
+
   .totalCost {
     font-size: 30px;
     font-weight: bold;
@@ -41,19 +41,25 @@
     opacity: 0.5;
   }
 
-.radioGroup {
-  display: flex;
-  flex-direction: column;
-  margin: 10px;
-  margin-left: 15px;
-  align-items: flex-start;
-}
+  .radioGroup {
+    display: flex;
+    flex-direction: column;
+    margin: 10px;
+    margin-left: 15px;
+    align-items: flex-start;
+  }
 
-.radioButton {
-  margin: 5px
-}
+  .radioButton {
+    margin: 5px
+  }
 
-.filterButtons {
-  margin-left: 50px;
-  margin-right: 5px;
-}
+  .filterButtons {
+    margin-left: 50px;
+    margin-right: 5px;
+  }
+
+  .lineChart {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }

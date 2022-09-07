@@ -24,6 +24,7 @@ import { MatRadioModule, MAT_RADIO_DEFAULT_OPTIONS } from '@angular/material/rad
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatMenuModule } from '@angular/material/menu';
+import { NgChartsModule } from 'ng2-charts';
 
 @NgModule({
   declarations: [
@@ -51,7 +52,8 @@ import { MatMenuModule } from '@angular/material/menu';
     MatRadioModule,
     MatExpansionModule,
     MatTabsModule,
-    MatMenuModule
+    MatMenuModule,
+    NgChartsModule
   ],
   providers: [
     {provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: {appearance: 'fill'}},

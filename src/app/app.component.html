@@ -10,21 +10,29 @@
     Download Excel File
 </button>
 
+<div class="upperContainer">
+    <canvas baseChart [type]="'line'" [data]="lineChartData" [options]="lineChartOptions" [legend]="lineChartLegend">
+    </canvas>
+</div>
+
 <mat-accordion *ngFor="let year of years">
-    <mat-expansion-panel class="panel">
+    <mat-expansion-panel>
         <mat-expansion-panel-header>
             <mat-panel-title>
-                {{year}}
+                Expense List
             </mat-panel-title>
+            <mat-panel-description>
+                Year: {{year}}
+            </mat-panel-description>
         </mat-expansion-panel-header>
-
+        
         <mat-tab-group mat-align-tabs="center">
             <mat-tab *ngFor="let month of months ; let i = index">
                 <ng-template mat-tab-label>
                     <p>
                         {{month}}
                         <br>
-                        {{getCost(year, i)}} CAD
+                        {{costAtYearX[i]}} CAD
                     </p>
                 </ng-template>
                 <div class="container">
